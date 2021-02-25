@@ -20,7 +20,12 @@ namespace ef_core_st
         {
             optionsBuilder
                 .UseLoggerFactory(MyLoggerFactory)
-                .UseSqlite("Data Source=shop.db");
+                //.UseSqlite("Data Source=shop.db");
+                .UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=ShopDb;Integrated Security=SSPI;"); 
+                //@ işareti ters \'ı stringin parçası yapar.
+                //Integrated Security=SSPI demek localde olduğumuz için. kullanıcı adı ve şifreye gerek yok. 
+                //Sqlite migrations'u proje dosyamızdan siliyoruz. yeni migrations yapmamız gerekli. dotnet ef migrations add InitialCreate
+                //Migrations'ı uygulamak için kulllanacağımız komut dotnet ef database update
         }
     }
 
