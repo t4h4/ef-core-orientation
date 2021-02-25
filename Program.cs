@@ -45,7 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            GetProductById(14);
+            GetProductByName("xiaomi");
         }
 
         static void AddProducts()
@@ -89,7 +89,7 @@ namespace ef_core_st
             {
                 var products = context
                 .Products
-                .Select(p => new { p.Name, p.Price })
+                .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
                 .ToList(); // Gelen koleksiyonu listeye çeviriyoruz. veritabanına bu sayede select sorgusu gitmiş oluyor.
 
                 foreach (var item in products)
@@ -105,13 +105,31 @@ namespace ef_core_st
             {
                 var result = context
                     .Products
-                    .Where(p=> p.ProductId == id)
-                    .Select(p => new { p.Name, p.Price })
+                    .Where(p => p.ProductId == id)
+                    .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
                     .FirstOrDefault(); // bunun sayesinde ilgili kayıt bulunamaz ise null değer gönderir.
 
 
                 Console.WriteLine($"name: {result.Name} price: {result.Price}");
-                
+
+            }
+        }
+
+        static void GetProductByName(string name)
+        {
+            using (var context = new ShopContext())
+            {
+                var result = context
+                    .Products
+                    .Where(p => p.Name.ToLower().Contains(name.ToLower())) //contains içeriyormu? büyük küçük harf hassasiyetine dikkat et.
+                    .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
+                    .ToList();
+
+                foreach (var item in result)
+                {
+                    Console.WriteLine($"name: {item.Name} price: {item.Price}");
+                }
+
             }
         }
     }
