@@ -87,8 +87,10 @@ namespace ef_core_st
         {
             using (var context = new ShopContext())
             {
-                var products = context.Products.ToList(); // Gelen koleksiyonu listeye çeviriyoruz.
-                //veritabanına bu sayede select sorgusu gitmiş oluyor.
+                var products = context
+                .Products
+                .Select(p => new { p.Name, p.Price })
+                .ToList(); // Gelen koleksiyonu listeye çeviriyoruz. veritabanına bu sayede select sorgusu gitmiş oluyor.
 
                 foreach (var item in products)
                 {
