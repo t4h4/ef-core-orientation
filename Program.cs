@@ -135,19 +135,27 @@ namespace ef_core_st
 
         static void UpdateProduct()
         {
+            //select olmadan, sadece attach ile verilen entity için takip başlatılıyor.
             using (var db = new ShopContext())
             {
-                //entity'nin change tracking özelliği sayesinde yaparız. eğer .AsNoTracking() dersek güncelleme yapılmazdı(aşağıdaki noktalı yerlere ek olarak).
-                //EF takip etmediği objeyi SaveChanges yapamaz!
-                var p = db.Products.Where(i=>i.ProductId==14).FirstOrDefault(); //first all diyerek tek kayıt geliyor. eğer kayıt yoksa null geliyor.
-                if(p!=null)
-                {
-                    p.Price *=1.2m; //fiyat üzerinde %20'lik artış
-                    db.SaveChanges();
-
-                    Console.WriteLine("Güncelleme yapıldı.");
-                }
+                var entity = new Product() {ProductId=14};
+                db.Products.Attach(entity);
+                entity.Price = 8000;
+                db.SaveChanges();
             }
+            // using (var db = new ShopContext())
+            // {
+            //     //entity'nin change tracking özelliği sayesinde yaparız. eğer .AsNoTracking() dersek güncelleme yapılmazdı(aşağıdaki noktalı yerlere ek olarak).
+            //     //EF takip etmediği objeyi SaveChanges yapamaz!
+            //     var p = db.Products.Where(i=>i.ProductId==14).FirstOrDefault(); //first all diyerek tek kayıt geliyor. eğer kayıt yoksa null geliyor.
+            //     if(p!=null)
+            //     {
+            //         p.Price *=1.2m; //fiyat üzerinde %20'lik artış
+            //         db.SaveChanges();
+
+            //         Console.WriteLine("Güncelleme yapıldı.");
+            //     }
+            // }
         }
     }
 }
