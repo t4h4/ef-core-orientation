@@ -45,7 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            GetAllProducts();
+            GetProductById(14);
         }
 
         static void AddProducts()
@@ -96,6 +96,21 @@ namespace ef_core_st
                 {
                     Console.WriteLine($"name: {item.Name} price: {item.Price}");
                 }
+            }
+        }
+
+        static void GetProductById(int id)
+        {
+            using (var context = new ShopContext())
+            {
+                var result = context
+                    .Products
+                    .Where(p=> p.ProductId == id)
+                    .FirstOrDefault(); // bunun sayesinde ilgili kayıt bulunamaz ise null değer gönderir.
+
+
+                Console.WriteLine($"name: {result.Name} price: {result.Price}");
+                
             }
         }
     }
