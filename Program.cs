@@ -106,20 +106,38 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
+            // using (var db = new ShopContext())
+            // {
+            //     var customer = new Customer()
+            //     {
+            //         IdentityNumber = "16856156",
+            //         FirstName = "Taha",
+            //         LastName = "Erkan",
+            //         UserId = 1
+            //         // User = db.Users.FirstOrDefault(i=>i.Id==1)     // bu şekilde de yapabilirdik.
+            //     };
+
+            //     db.Customers.Add(customer);
+            //     db.SaveChanges();
+            // }
+
             using (var db = new ShopContext())
             {
-                var customer = new Customer()
+                var user = new User()
                 {
-                    IdentityNumber = "16856156",
-                    FirstName = "Taha",
-                    LastName = "Erkan",
-                    UserId = 1
-                    // User = db.Users.FirstOrDefault(i=>i.Id==1)     // bu şekilde de yapabilirdik.
+                    Username = "deneme",
+                    Email = "deneme@deneme.com",
+                    Customer = new Customer()
+                    {
+                        FirstName = "deneme",
+                        LastName = "deneme",
+                        IdentityNumber = "12312312"
+                    }
                 };
-
-                db.Customers.Add(customer);
+                db.Users.Add(user);
                 db.SaveChanges();
             }
+
         }
 
         static void InsertUsers()
