@@ -35,7 +35,13 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-
+            using (var db = new ShopContext()) //using içerisine alırsak işimiz bittiğinde bellekten silinir.
+            {
+                var p = new Product { Name = "Xiaomi Mi A2", Price = 2000 };
+                db.Products.Add(p);
+                db.SaveChanges();
+                Console.WriteLine("Veriler eklendi");
+            }
         }
     }
 }
