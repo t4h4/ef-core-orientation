@@ -45,7 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            DeleteProduct(16);
+            DeleteProduct(13);
         }
 
         static void AddProducts()
@@ -173,17 +173,21 @@ namespace ef_core_st
 
         static void DeleteProduct(int id)
         {
-            using (var db = new ShopContext()) //Bunda select oluyor.
+            using (var db = new ShopContext())
             {
-                var p = db.Products.FirstOrDefault(i => i.ProductId == id);
+                var p = new Product() { ProductId = id }; //select olmuyor.
+                db.Products.Remove(p);
+                db.SaveChanges();
 
-                if (p!=null)
-                {
-                    db.Products.Remove(p);
-                    db.SaveChanges();
+                //     var p = db.Products.FirstOrDefault(i => i.ProductId == id); //Bunda select oluyor.
 
-                    Console.WriteLine("Veri silindi.");
-                }
+                //     if (p!=null)
+                //     {
+                //         db.Products.Remove(p);
+                //         db.SaveChanges();
+
+                //         Console.WriteLine("Veri silindi.");
+                //     }
             }
         }
     }
