@@ -135,14 +135,27 @@ namespace ef_core_st
 
         static void UpdateProduct()
         {
-            //select olmadan, sadece attach ile verilen entity için takip başlatılıyor.
             using (var db = new ShopContext())
             {
-                var entity = new Product() {ProductId=14};
-                db.Products.Attach(entity);
-                entity.Price = 8000;
-                db.SaveChanges();
+                var p = db.Products.Where(i => i.ProductId == 14).FirstOrDefault();
+                if (p != null)
+                {   
+                    p.Price = 154300;
+                    //updaterange ile listeyi güncelleyebilirdik.
+                    db.Products.Update(p); //objeyi olduğu gibi update fonksiyonuna gönderdiğimiz için bütün alanlar güncellenir aynı
+                    //olsa bile. Bu da veritabanını yorar. Aşağıdaki diğer yaklaşımları kullanmak daha mantıklı. 
+                    db.SaveChanges();
+                }
             }
+
+            //select olmadan, sadece attach ile verilen entity için takip başlatılıyor.
+            // using (var db = new ShopContext())
+            // {
+            //     var entity = new Product() {ProductId=14};
+            //     db.Products.Attach(entity);
+            //     entity.Price = 8000;
+            //     db.SaveChanges();
+            // }
             // using (var db = new ShopContext())
             // {
             //     //entity'nin change tracking özelliği sayesinde yaparız. eğer .AsNoTracking() dersek güncelleme yapılmazdı(aşağıdaki noktalı yerlere ek olarak).
