@@ -11,6 +11,7 @@ namespace ef_core_st
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; } //sonradan eklendi
 
         //dotnet add package Microsoft.Extensions.Logging.Console --version 5.0.0
         public static readonly ILoggerFactory MyLoggerFactory
@@ -41,6 +42,8 @@ namespace ef_core_st
         [Required]
         public string Name { get; set; }
         public decimal Price { get; set; } //decimal alan normalde zorunlu alan ama sonuna decimal? yaparsak null alabilen olur. Şimdiki haliyle mutlaka fiyat bilgisi gerekli
+        public int CategoryId { get; set; } // yeni kolon. migratons güncelle. dotnet ef migrations add addColumnProductCategoryId 
+        //dotnet ef database update  
 
     }
 
@@ -48,6 +51,13 @@ namespace ef_core_st
     {
         public int CategoryId { get; set; }
         public string Name { get; set; }
+    }
+
+    public class Order //sonradan eklendi
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public DateTime DateAdded { get; set; }
     }
 
     class Program
