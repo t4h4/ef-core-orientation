@@ -12,6 +12,7 @@ namespace ef_core_st
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Customer> Customers { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
 
@@ -41,13 +42,34 @@ namespace ef_core_st
     // One to One
     // Many to Many
 
-    // 1 kullanıcının birden fazla adresi olabilir. senaryo bu.
+    // 1 kullanıcının birden fazla adresi olabilir. One to Many senaryo bu.
+    // 1 kullanıcı birden fazla müşteri ya da supplier olması beklenemez. One to One senaryo bu. (aynı anda hem müşteri hem supplier olabilir ama.) 
     public class User
     {
         public int Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
-        public List<Address> Adresses { get; set; } //navigation property
+        public Customer Customer { get; set; } // one to one olduğu için tekil. list değil
+        public List<Address> Adresses { get; set; } //navigation property one to many olduğu için list
+    }
+
+    public class Customer //User ile ilişki sağlandıgından context'e eklemesek bile veritabanına bu kolon gitti. ama aşağıdaki supplier tablosu gitmedi. çünkü user ile ilişkisi yok.
+    //Ama veritabanına ekleme falan yaparken lazım olur diye gene de context'e bu kolonu ekliyoruz. 
+    {
+        public int Id { get; set; }
+        public string IdentityNumber { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public User User { get; set; }
+        public int UserId { get; set; }
+
+    }
+
+    public class Supplier
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string TaxNumber { get; set; }
     }
 
     public class Address
@@ -84,24 +106,19 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            // InsertUsers();
-            // InsertAddresses();
-
             using (var db = new ShopContext())
             {
-                var user = db.Users.FirstOrDefault(i => i.Username == "Taha");
-                if (user != null)
+                var customer = new Customer()
                 {
-                    user.Adresses = new List<Address>();
-                    user.Adresses.AddRange(
-                        new List<Address>(){
-                            new Address(){Fullname="Taha Erkan", Title="İş1", Body="Ankara"},
-                            new Address(){Fullname="Taha Erkan", Title="İş2", Body="Ankara"},
-                            new Address(){Fullname="Taha Erkan", Title="İş3", Body="Ankara"},
-                        }
-                    );
-                    db.SaveChanges();
-                }
+                    IdentityNumber = "16856156",
+                    FirstName = "Taha",
+                    LastName = "Erkan",
+                    UserId = 1
+                    // User = db.Users.FirstOrDefault(i=>i.Id==1)     // bu şekilde de yapabilirdik.
+                };
+
+                db.Customers.Add(customer);
+                db.SaveChanges();
             }
         }
 

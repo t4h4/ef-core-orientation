@@ -55,6 +55,32 @@ namespace ef_core_st.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("ef_core_st.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentityNumber")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("ef_core_st.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -105,9 +131,22 @@ namespace ef_core_st.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ef_core_st.Customer", b =>
+                {
+                    b.HasOne("ef_core_st.User", "User")
+                        .WithOne("Customer")
+                        .HasForeignKey("ef_core_st.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ef_core_st.User", b =>
                 {
                     b.Navigation("Adresses");
+
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,8 +8,8 @@ using ef_core_st;
 namespace ef_core_st.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20210225212657_OnetoManyRelation")]
-    partial class OnetoManyRelation
+    [Migration("20210225223009_OnetoOneRelation")]
+    partial class OnetoOneRelation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,6 +55,32 @@ namespace ef_core_st.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("ef_core_st.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentityNumber")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("ef_core_st.Product", b =>
@@ -107,9 +133,22 @@ namespace ef_core_st.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ef_core_st.Customer", b =>
+                {
+                    b.HasOne("ef_core_st.User", "User")
+                        .WithOne("Customer")
+                        .HasForeignKey("ef_core_st.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ef_core_st.User", b =>
                 {
                     b.Navigation("Adresses");
+
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }
