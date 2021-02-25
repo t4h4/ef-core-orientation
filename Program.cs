@@ -11,7 +11,10 @@ namespace ef_core_st
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Order> Orders { get; set; } //sonradan eklendi
+        public DbSet<User> Users { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+
+
 
         //dotnet add package Microsoft.Extensions.Logging.Console --version 5.0.0
         public static readonly ILoggerFactory MyLoggerFactory
@@ -34,6 +37,30 @@ namespace ef_core_st
         }
     }
 
+    // One to Many
+    // One to One
+    // Many to Many
+
+    // 1 kullanıcının birden fazla adresi olabilir. senaryo bu.
+    public class User
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public List<Address> Adresses { get; set; } //navigation property
+    }
+
+    public class Address
+    {
+        public int Id { get; set; }
+        public string Fullname { get; set; }
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public User User { get; set; } //navigation property
+        public int UserId { get; set; }
+        // public int? UserId { get; set; } 
+        // soru işareti sayesinde address bilgileri girilirken UserId girilmese bile olur. otomatikman null diye geçer.
+    }
     public class Product
     {
         // primary key (Id, <type_name>Id)
@@ -53,161 +80,63 @@ namespace ef_core_st
         public string Name { get; set; }
     }
 
-    public class Order //sonradan eklendi
-    {
-        public int Id { get; set; }
-        public int ProductId { get; set; }
-        public DateTime DateAdded { get; set; }
-    }
-
     class Program
     {
         static void Main(string[] args)
         {
-            AddProducts();
-        }
+            // InsertUsers();
+            // InsertAddresses();
 
-        static void AddProducts()
-        {
-            using (var db = new ShopContext()) //using içerisine alırsak işimiz bittiğinde bellekten silinir.
-            {
-                var products = new List<Product>()
-                {
-                    new Product { Name = "Nokia 6600", Price = 300 },
-                    new Product { Name = "Xiaomi Mi A1", Price = 3000 },
-                    new Product { Name = "Xiaomi Mi A2", Price = 3000 },
-                    new Product { Name = "Xiaomi Mi A3", Price = 3000 },
-                    new Product { Name = "Xiaomi Redmi Note", Price = 3000 }
-
-                };
-
-                // foreach (var p in products)
-                // {
-                //     db.Products.Add(p);
-                // }
-
-                db.Products.AddRange(products); //yukarıdaki kodlarıda kullanabiliriz bu şekilde koleksiyonuda ekleyebiliriz.
-                db.SaveChanges();
-                Console.WriteLine("Veriler eklendi");
-            }
-        }
-
-        static void AddProduct()
-        {
-            using (var db = new ShopContext()) //using içerisine alırsak işimiz bittiğinde bellekten silinir.
-            {
-                var p = new Product { Name = "Nokia 6600", Price = 20000 };
-                db.Products.Add(p);
-                db.SaveChanges();
-                Console.WriteLine("Veri eklendi");
-            }
-        }
-
-        static void GetAllProducts()
-        {
-            using (var context = new ShopContext())
-            {
-                var products = context
-                .Products
-                .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
-                .ToList(); // Gelen koleksiyonu listeye çeviriyoruz. veritabanına bu sayede select sorgusu gitmiş oluyor.
-
-                foreach (var item in products)
-                {
-                    Console.WriteLine($"name: {item.Name} price: {item.Price}");
-                }
-            }
-        }
-
-        static void GetProductById(int id)
-        {
-            using (var context = new ShopContext())
-            {
-                var result = context
-                    .Products
-                    .Where(p => p.ProductId == id)
-                    .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
-                    .FirstOrDefault(); // bunun sayesinde ilgili kayıt bulunamaz ise null değer gönderir.
-
-
-                Console.WriteLine($"name: {result.Name} price: {result.Price}");
-
-            }
-        }
-
-        static void GetProductByName(string name)
-        {
-            using (var context = new ShopContext())
-            {
-                var result = context
-                    .Products
-                    .Where(p => p.Name.ToLower().Contains(name.ToLower())) //contains içeriyormu? büyük küçük harf hassasiyetine dikkat et.
-                    .Select(p => new { p.Name, p.Price }) //istediğimiz kolonları filtreleyebiliyoruz.
-                    .ToList();
-
-                foreach (var item in result)
-                {
-                    Console.WriteLine($"name: {item.Name} price: {item.Price}");
-                }
-
-            }
-        }
-
-        static void UpdateProduct()
-        {
             using (var db = new ShopContext())
             {
-                var p = db.Products.Where(i => i.ProductId == 14).FirstOrDefault();
-                if (p != null)
+                var user = db.Users.FirstOrDefault(i => i.Username == "Taha");
+                if (user != null)
                 {
-                    p.Price = 154300;
-                    //updaterange ile listeyi güncelleyebilirdik.
-                    db.Products.Update(p); //objeyi olduğu gibi update fonksiyonuna gönderdiğimiz için bütün alanlar güncellenir aynı
-                    //olsa bile. Bu da veritabanını yorar. Aşağıdaki diğer yaklaşımları kullanmak daha mantıklı. 
+                    user.Adresses = new List<Address>();
+                    user.Adresses.AddRange(
+                        new List<Address>(){
+                            new Address(){Fullname="Taha Erkan", Title="İş1", Body="Ankara"},
+                            new Address(){Fullname="Taha Erkan", Title="İş2", Body="Ankara"},
+                            new Address(){Fullname="Taha Erkan", Title="İş3", Body="Ankara"},
+                        }
+                    );
                     db.SaveChanges();
                 }
             }
-
-            //select olmadan, sadece attach ile verilen entity için takip başlatılıyor.
-            // using (var db = new ShopContext())
-            // {
-            //     var entity = new Product() {ProductId=14};
-            //     db.Products.Attach(entity);
-            //     entity.Price = 8000;
-            //     db.SaveChanges();
-            // }
-            // using (var db = new ShopContext())
-            // {
-            //     //entity'nin change tracking özelliği sayesinde yaparız. eğer .AsNoTracking() dersek güncelleme yapılmazdı(aşağıdaki noktalı yerlere ek olarak).
-            //     //EF takip etmediği objeyi SaveChanges yapamaz!
-            //     var p = db.Products.Where(i=>i.ProductId==14).FirstOrDefault(); //first all diyerek tek kayıt geliyor. eğer kayıt yoksa null geliyor.
-            //     if(p!=null)
-            //     {
-            //         p.Price *=1.2m; //fiyat üzerinde %20'lik artış
-            //         db.SaveChanges();
-
-            //         Console.WriteLine("Güncelleme yapıldı.");
-            //     }
-            // }
         }
 
-        static void DeleteProduct(int id)
+        static void InsertUsers()
         {
+            var users = new List<User>(){
+                new User(){Username="Taha", Email="taha@taha.com"},
+                new User(){Username="Elfin", Email="elfin@elfin.com"},
+                new User(){Username="Ali", Email="ali@ali.com"},
+                new User(){Username="Veli", Email="veli@veli.com"},
+            };
+
             using (var db = new ShopContext())
             {
-                var p = new Product() { ProductId = id }; //select olmuyor.
-                db.Products.Remove(p);
+                db.Users.AddRange(users);
                 db.SaveChanges();
+            }
+        }
 
-                //     var p = db.Products.FirstOrDefault(i => i.ProductId == id); //Bunda select oluyor.
+        static void InsertAddresses()
+        {
+            var addresses = new List<Address>(){
+                new Address(){Fullname="Taha Erkan", Title="Ev", Body="Ankara", UserId=1},
+                new Address(){Fullname="Taha Erkan", Title="İş", Body="Ankara", UserId=1},
+                new Address(){Fullname="Elfin Yılmaz", Title="Ev", Body="Ankara", UserId=2},
+                new Address(){Fullname="Elfin Yılmaz", Title="İş", Body="Ankara", UserId=2},
+                new Address(){Fullname="Ali Erkan", Title="İş", Body="Ankara", UserId=3},
+                new Address(){Fullname="Veli Erkan", Title="İş", Body="Ankara", UserId=4},
 
-                //     if (p!=null)
-                //     {
-                //         db.Products.Remove(p);
-                //         db.SaveChanges();
+            };
 
-                //         Console.WriteLine("Veri silindi.");
-                //     }
+            using (var db = new ShopContext())
+            {
+                db.Addresses.AddRange(addresses);
+                db.SaveChanges();
             }
         }
     }
