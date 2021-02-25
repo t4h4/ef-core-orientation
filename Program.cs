@@ -45,7 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            UpdateProduct();
+            DeleteProduct(16);
         }
 
         static void AddProducts()
@@ -139,7 +139,7 @@ namespace ef_core_st
             {
                 var p = db.Products.Where(i => i.ProductId == 14).FirstOrDefault();
                 if (p != null)
-                {   
+                {
                     p.Price = 154300;
                     //updaterange ile listeyi güncelleyebilirdik.
                     db.Products.Update(p); //objeyi olduğu gibi update fonksiyonuna gönderdiğimiz için bütün alanlar güncellenir aynı
@@ -169,6 +169,22 @@ namespace ef_core_st
             //         Console.WriteLine("Güncelleme yapıldı.");
             //     }
             // }
+        }
+
+        static void DeleteProduct(int id)
+        {
+            using (var db = new ShopContext()) //Bunda select oluyor.
+            {
+                var p = db.Products.FirstOrDefault(i => i.ProductId == id);
+
+                if (p!=null)
+                {
+                    db.Products.Remove(p);
+                    db.SaveChanges();
+
+                    Console.WriteLine("Veri silindi.");
+                }
+            }
         }
     }
 }
