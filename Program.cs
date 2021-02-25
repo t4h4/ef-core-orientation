@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +19,7 @@ namespace ef_core_st
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseLoggerFactory(MyLoggerFactory)  
+                .UseLoggerFactory(MyLoggerFactory)
                 .UseSqlite("Data Source=shop.db");
         }
     }
@@ -44,8 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            AddProduct();
-            AddProducts();
+            GetAllProducts();
         }
 
         static void AddProducts()
@@ -80,6 +80,20 @@ namespace ef_core_st
                 db.Products.Add(p);
                 db.SaveChanges();
                 Console.WriteLine("Veri eklendi");
+            }
+        }
+
+        static void GetAllProducts()
+        {
+            using (var context = new ShopContext())
+            {
+                var products = context.Products.ToList(); // Gelen koleksiyonu listeye çeviriyoruz.
+                //veritabanına bu sayede select sorgusu gitmiş oluyor.
+
+                foreach (var item in products)
+                {
+                    Console.WriteLine($"name: {item.Name} price: {item.Price}");
+                }
             }
         }
     }
