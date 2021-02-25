@@ -45,7 +45,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            GetProductByName("xiaomi");
+            UpdateProduct();
         }
 
         static void AddProducts()
@@ -130,6 +130,23 @@ namespace ef_core_st
                     Console.WriteLine($"name: {item.Name} price: {item.Price}");
                 }
 
+            }
+        }
+
+        static void UpdateProduct()
+        {
+            using (var db = new ShopContext())
+            {
+                //entity'nin change tracking özelliği sayesinde yaparız. eğer .AsNoTracking() dersek güncelleme yapılmazdı(aşağıdaki noktalı yerlere ek olarak).
+                //EF takip etmediği objeyi SaveChanges yapamaz!
+                var p = db.Products.Where(i=>i.ProductId==14).FirstOrDefault(); //first all diyerek tek kayıt geliyor. eğer kayıt yoksa null geliyor.
+                if(p!=null)
+                {
+                    p.Price *=1.2m; //fiyat üzerinde %20'lik artış
+                    db.SaveChanges();
+
+                    Console.WriteLine("Güncelleme yapıldı.");
+                }
             }
         }
     }
