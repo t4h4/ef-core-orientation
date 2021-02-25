@@ -21,11 +21,11 @@ namespace ef_core_st
             optionsBuilder
                 .UseLoggerFactory(MyLoggerFactory)
                 //.UseSqlite("Data Source=shop.db");
-                .UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=ShopDb;Integrated Security=SSPI;"); 
-                //@ işareti ters \'ı stringin parçası yapar.
-                //Integrated Security=SSPI demek localde olduğumuz için. kullanıcı adı ve şifreye gerek yok. 
-                //Sqlite migrations'u proje dosyamızdan siliyoruz. yeni migrations yapmamız gerekli. dotnet ef migrations add InitialCreate
-                //Migrations'ı uygulamak için kulllanacağımız komut dotnet ef database update
+                .UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=ShopDb;Integrated Security=SSPI;");
+            //@ işareti ters \'ı stringin parçası yapar.
+            //Integrated Security=SSPI demek localde olduğumuz için. kullanıcı adı ve şifreye gerek yok. 
+            //Sqlite migrations'u proje dosyamızdan siliyoruz. yeni migrations yapmamız gerekli. dotnet ef migrations add InitialCreate
+            //Migrations'ı uygulamak için kulllanacağımız komut dotnet ef database update
         }
     }
 
@@ -50,7 +50,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            DeleteProduct(13);
+            AddProducts();
         }
 
         static void AddProducts()
@@ -59,10 +59,11 @@ namespace ef_core_st
             {
                 var products = new List<Product>()
                 {
+                    new Product { Name = "Nokia 6600", Price = 300 },
                     new Product { Name = "Xiaomi Mi A1", Price = 3000 },
-                    new Product { Name = "Xiaomi Mi A2", Price = 4000 },
-                    new Product { Name = "Xiaomi Mi A3", Price = 5000 },
-                    new Product { Name = "Xiaomi Redmi Note", Price = 2500 }
+                    new Product { Name = "Xiaomi Mi A2", Price = 3000 },
+                    new Product { Name = "Xiaomi Mi A3", Price = 3000 },
+                    new Product { Name = "Xiaomi Redmi Note", Price = 3000 }
 
                 };
 
