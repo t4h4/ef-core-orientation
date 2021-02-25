@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ef_core_st
 {
@@ -10,9 +11,15 @@ namespace ef_core_st
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
 
+        //dotnet add package Microsoft.Extensions.Logging.Console --version 5.0.0
+        public static readonly ILoggerFactory MyLoggerFactory
+            = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=shop.db");
+            optionsBuilder
+                .UseLoggerFactory(MyLoggerFactory)  
+                .UseSqlite("Data Source=shop.db");
         }
     }
 
@@ -37,6 +44,12 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
+            AddProduct();
+            AddProducts();
+        }
+
+        static void AddProducts()
+        {
             using (var db = new ShopContext()) //using içerisine alırsak işimiz bittiğinde bellekten silinir.
             {
                 var products = new List<Product>()
@@ -56,6 +69,17 @@ namespace ef_core_st
                 db.Products.AddRange(products); //yukarıdaki kodlarıda kullanabiliriz bu şekilde koleksiyonuda ekleyebiliriz.
                 db.SaveChanges();
                 Console.WriteLine("Veriler eklendi");
+            }
+        }
+
+        static void AddProduct()
+        {
+            using (var db = new ShopContext()) //using içerisine alırsak işimiz bittiğinde bellekten silinir.
+            {
+                var p = new Product { Name = "Nokia 6600", Price = 20000 };
+                db.Products.Add(p);
+                db.SaveChanges();
+                Console.WriteLine("Veri eklendi");
             }
         }
     }
