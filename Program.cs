@@ -106,6 +106,7 @@ namespace ef_core_st
                 var result = context
                     .Products
                     .Where(p=> p.ProductId == id)
+                    .Select(p => new { p.Name, p.Price })
                     .FirstOrDefault(); // bunun sayesinde ilgili kayıt bulunamaz ise null değer gönderir.
 
 
