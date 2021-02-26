@@ -36,11 +36,33 @@ namespace ef_core_st
             //dotnet ef database update
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //ProductCategory entity yapısının combine key'a sahip olmasını sağladık aşağıda.
+            //Bu şekilde yapıldığında tekrarlayan yapılar database tarafından kabul edilmez.
+            modelBuilder.Entity<ProductCategory>()
+                        .HasKey(t => new { t.ProductId, t.CategoryId });
+
+            modelBuilder.Entity<ProductCategory>()
+                        .HasOne(pc => pc.Product)
+                        .WithMany(p => p.ProductCategories)
+                        .HasForeignKey(pc => pc.ProductId); //yabancı id
+
+            modelBuilder.Entity<ProductCategory>()
+                        .HasOne(pc => pc.Category)
+                        .WithMany(c => c.ProductCategories)
+                        .HasForeignKey(pc => pc.CategoryId);
+        }
     }
 
     // One to Many
     // One to One
     // Many to Many
+
+    // convention ProductId
+    // data annotations [Key]
+    // fluent api
 
     // 1 kullanıcının birden fazla adresi olabilir. One to Many senaryo bu.
     // 1 kullanıcı birden fazla müşteri ya da supplier olması beklenemez. One to One senaryo bu. (aynı anda hem müşteri hem supplier olabilir ama.) 
@@ -83,58 +105,62 @@ namespace ef_core_st
         // public int? UserId { get; set; } 
         // soru işareti sayesinde address bilgileri girilirken UserId girilmese bile olur. otomatikman null diye geçer.
     }
+
+    //bir product birden fazla kategoride olabilir. 
     public class Product
     {
         // primary key (Id, <type_name>Id)
+        //[Key] diyerek de belirtebilirdik üzerinde.
         public int ProductId { get; set; } // yukarıdaki yorum satırındaki yapı gibi oldugundan primary key oldu.
-        [MaxLength(100)]
-        [Required]
+        // [MaxLength(100)]
+        // [Required]
         public string Name { get; set; }
         public decimal Price { get; set; } //decimal alan normalde zorunlu alan ama sonuna decimal? yaparsak null alabilen olur. Şimdiki haliyle mutlaka fiyat bilgisi gerekli
-        public int CategoryId { get; set; } // yeni kolon. migratons güncelle. dotnet ef migrations add addColumnProductCategoryId 
-        //dotnet ef database update  
-
+        //  public int CategoryId { get; set; } // yeni kolon. migratons güncelle. dotnet ef migrations add addColumnProductCategoryId 
+        //  dotnet ef database update  
+        public List<ProductCategory> ProductCategories { get; set; }
     }
 
     public class Category
     {
         public int CategoryId { get; set; }
         public string Name { get; set; }
+
+        public List<ProductCategory> ProductCategories { get; set; }
+    }
+
+    //Context'e eklemek gerekmiyor.
+    public class ProductCategory
+    {
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
+
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            // using (var db = new ShopContext())
-            // {
-            //     var customer = new Customer()
-            //     {
-            //         IdentityNumber = "16856156",
-            //         FirstName = "Taha",
-            //         LastName = "Erkan",
-            //         UserId = 1
-            //         // User = db.Users.FirstOrDefault(i=>i.Id==1)     // bu şekilde de yapabilirdik.
-            //     };
-
-            //     db.Customers.Add(customer);
-            //     db.SaveChanges();
-            // }
-
             using (var db = new ShopContext())
             {
-                var user = new User()
+                var products = new List<Product>()
                 {
-                    Username = "deneme",
-                    Email = "deneme@deneme.com",
-                    Customer = new Customer()
-                    {
-                        FirstName = "deneme",
-                        LastName = "deneme",
-                        IdentityNumber = "12312312"
-                    }
+                    new Product() {Name="Nokia 3310",Price=6000},
+                    new Product() {Name="Nokia 3210",Price=5000},
+                    new Product() {Name="Nokia N8",Price=7000},
+                    new Product() {Name="Nokia 6230i",Price=5500},
                 };
-                db.Users.Add(user);
+                db.Products.AddRange(products);
+
+                var categories = new List<Category>()
+                {
+                    new Category() {Name="Telefon"},
+                    new Category() {Name="Elektronik"},
+                    new Category() {Name="Bilgisayar"},
+                };
+                db.Categories.AddRange(categories);
                 db.SaveChanges();
             }
 
