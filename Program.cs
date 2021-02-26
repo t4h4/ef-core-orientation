@@ -130,6 +130,7 @@ namespace ef_core_st
     }
 
     //Context'e eklemek gerekmiyor.
+    //ManyToMany Relation ise bir ürün birden fazla kategoride olabilir, bir kategoride birden fazla ürün içerebilir.
     public class ProductCategory
     {
         public int ProductId { get; set; }
@@ -152,7 +153,7 @@ namespace ef_core_st
                     new Product() {Name="Nokia N8",Price=7000},
                     new Product() {Name="Nokia 6230i",Price=5500},
                 };
-                db.Products.AddRange(products);
+
 
                 var categories = new List<Category>()
                 {
@@ -160,7 +161,19 @@ namespace ef_core_st
                     new Category() {Name="Elektronik"},
                     new Category() {Name="Bilgisayar"},
                 };
-                db.Categories.AddRange(categories);
+                // ****************
+                //aşağısı 1 numaralı ürünün yani nokia 3310 telefonunun kategorisini hem telefon hem de elektronik
+                //olarak kaydediyor ProductCategory entity yapısına.
+                // ****************
+                int[] ids = new int[2] { 1, 2 };
+                var p = db.Products.Find(1);
+                //select ile foreach gibi dolanabiliyoruz.
+                p.ProductCategories = ids.Select(cid => new ProductCategory() //1. ve 2. kategoriler için uygulanıyor, ama sadece 1. product için.
+                {
+                    CategoryId = cid,
+                    ProductId = p.ProductId
+                }).ToList();
+
                 db.SaveChanges();
             }
 
