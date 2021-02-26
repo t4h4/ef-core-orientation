@@ -69,6 +69,46 @@ namespace ef_core_st
         }
     }
 
+    public static class DataSeeding
+    {
+        public static void Seed(DbContext context)
+        {
+            if (context.Database.GetPendingMigrations().Count() == 0) //bekleyen migration yoksa bloğa girer.
+            {
+                if (context is ShopContext)
+                {
+                    ShopContext _context = context as ShopContext;
+
+                    if (_context.Products.Count() == 0) //Hiç product yoksa ekle
+                    {
+                        _context.Products.AddRange(Products);
+                    }
+
+                    if (_context.Categories.Count() == 0) //Hiç category yoksa ekle
+                    {
+                        _context.Categories.AddRange(Categories);
+                    }
+                }
+
+                context.SaveChanges();
+
+            }
+        }
+
+        private static Product[] Products = {
+            new Product(){Name="Samsun S6",Price=2000},
+            new Product(){Name="Samsun S7",Price=3000},
+            new Product(){Name="Samsun S8",Price=4000},
+            new Product(){Name="Samsun S9",Price=5000}
+        };
+
+        private static Category[] Categories = {
+            new Category(){Name="Telefon"},
+            new Category(){Name="Elektronik"},
+            new Category(){Name="Bilgisayar"}
+        };
+    }
+
     // One to Many
     // One to One
     // Many to Many
@@ -179,23 +219,7 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            using (var db = new ShopContext())
-            {
-                // var p = new Product()
-                // {
-                //     Name = "Samsung S6",
-                //     Price = 2000
-                // };
-
-                // db.Products.Add(p);
-
-                //ilk kaydı güncelleyelim ve LastUpdateDate'in güncellendiğini görelim.
-                var p = db.Products.FirstOrDefault();
-                p.Name = "iPhone X";
-
-                db.SaveChanges();
-            }
-
+            DataSeeding.Seed(new ShopContext());
         }
 
         static void InsertUsers()
