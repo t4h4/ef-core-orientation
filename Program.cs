@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -39,6 +40,18 @@ namespace ef_core_st
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                        .HasIndex(u => u.Username)
+                        .IsUnique();
+
+            modelBuilder.Entity<Product>()
+                        .ToTable("Urunler"); // uygulama tarafında bu isimle göreceğiz.
+
+            modelBuilder.Entity<Customer>()
+                        .Property(p => p.IdentityNumber)
+                        .HasMaxLength(11)
+                        .IsRequired();
+
             //ProductCategory entity yapısının combine key'a sahip olmasını sağladık aşağıda.
             //Bu şekilde yapıldığında tekrarlayan yapılar database tarafından kabul edilmez.
             modelBuilder.Entity<ProductCategory>()
@@ -69,7 +82,10 @@ namespace ef_core_st
     public class User
     {
         public int Id { get; set; }
+        [Required]
+        [MinLength(8), MaxLength(15)]
         public string Username { get; set; }
+        [Column(TypeName = "varchar(20)")]
         public string Email { get; set; }
         public Customer Customer { get; set; } // one to one olduğu için tekil. list değil
         public List<Address> Adresses { get; set; } //navigation property one to many olduğu için list
@@ -78,10 +94,16 @@ namespace ef_core_st
     public class Customer //User ile ilişki sağlandıgından context'e eklemesek bile veritabanına bu kolon gitti. ama aşağıdaki supplier tablosu gitmedi. çünkü user ile ilişkisi yok.
     //Ama veritabanına ekleme falan yaparken lazım olur diye gene de context'e bu kolonu ekliyoruz. 
     {
+        [Column("customer_id")] //uygulama tarafındaki id bilgisi veritabanındaki buraya karşılık gelir.
         public int Id { get; set; }
+        [Required]
         public string IdentityNumber { get; set; }
+        [Required]
         public string FirstName { get; set; }
+        [Required]
         public string LastName { get; set; }
+        [NotMapped] //bu sayede database'e göndermeyiz. sadece uygulama içerisinde kullanırız.
+        public string FullName { get; set; } //database'de istemiyorum.
         public User User { get; set; }
         public int UserId { get; set; }
 
@@ -100,6 +122,7 @@ namespace ef_core_st
         public string Fullname { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
+
         public User User { get; set; } //navigation property
         public int UserId { get; set; }
         // public int? UserId { get; set; } 
@@ -111,13 +134,20 @@ namespace ef_core_st
     {
         // primary key (Id, <type_name>Id)
         //[Key] diyerek de belirtebilirdik üzerinde.
+        // [DatabaseGenerated(DatabaseGeneratedOption.None)] //id'yi kendimiz girmemiz lazım. oto arttırımı engelliyor.
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProductId { get; set; } // yukarıdaki yorum satırındaki yapı gibi oldugundan primary key oldu.
-        // [MaxLength(100)]
-        // [Required]
         public string Name { get; set; }
         public decimal Price { get; set; } //decimal alan normalde zorunlu alan ama sonuna decimal? yaparsak null alabilen olur. Şimdiki haliyle mutlaka fiyat bilgisi gerekli
         //  public int CategoryId { get; set; } // yeni kolon. migratons güncelle. dotnet ef migrations add addColumnProductCategoryId 
         //  dotnet ef database update  
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // bir kere oluşturuluyor, bi' daha değiştirilmiyor. ilk giriş datasının vaktide mantıken değiştirilmemesi lazım.
+        public DateTime InsertedDate { get; set; } = DateTime.Now;
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)] // güncellenebilir, değiştirilebilir alan oluyor.
+        public DateTime LastUpdatedDate { get; set; } = DateTime.Now;
+
         public List<ProductCategory> ProductCategories { get; set; }
     }
 
@@ -129,8 +159,13 @@ namespace ef_core_st
         public List<ProductCategory> ProductCategories { get; set; }
     }
 
-    //Context'e eklemek gerekmiyor.
+    //Context'e eklemek gerekmiyor. Çünkü context'e eklenen product ve category entity yapılarında aşağıdaki entity eleman olarak 
+    //yani liste olarak kullanıldı bu yüzden.
+    // [NotMapped] diyerek database'de gözükmesini engelleyebiliriz.
+    // [Table("UrunKategorileri")] bu şekilde database'de gözükmesini istediğimiz adı belirleyebiliriz. //Fluent api benzeri ise bunun yukarıda var. (modelbuilder'a bak)
     //ManyToMany Relation ise bir ürün birden fazla kategoride olabilir, bir kategoride birden fazla ürün içerebilir.
+
+    [Table("UrunKategorileri")]
     public class ProductCategory
     {
         public int ProductId { get; set; }
@@ -146,33 +181,17 @@ namespace ef_core_st
         {
             using (var db = new ShopContext())
             {
-                var products = new List<Product>()
-                {
-                    new Product() {Name="Nokia 3310",Price=6000},
-                    new Product() {Name="Nokia 3210",Price=5000},
-                    new Product() {Name="Nokia N8",Price=7000},
-                    new Product() {Name="Nokia 6230i",Price=5500},
-                };
+                // var p = new Product()
+                // {
+                //     Name = "Samsung S6",
+                //     Price = 2000
+                // };
 
+                // db.Products.Add(p);
 
-                var categories = new List<Category>()
-                {
-                    new Category() {Name="Telefon"},
-                    new Category() {Name="Elektronik"},
-                    new Category() {Name="Bilgisayar"},
-                };
-                // ****************
-                //aşağısı 1 numaralı ürünün yani nokia 3310 telefonunun kategorisini hem telefon hem de elektronik
-                //olarak kaydediyor ProductCategory entity yapısına.
-                // ****************
-                int[] ids = new int[2] { 1, 2 };
-                var p = db.Products.Find(1);
-                //select ile foreach gibi dolanabiliyoruz.
-                p.ProductCategories = ids.Select(cid => new ProductCategory() //1. ve 2. kategoriler için uygulanıyor, ama sadece 1. product için.
-                {
-                    CategoryId = cid,
-                    ProductId = p.ProductId
-                }).ToList();
+                //ilk kaydı güncelleyelim ve LastUpdateDate'in güncellendiğini görelim.
+                var p = db.Products.FirstOrDefault();
+                p.Name = "iPhone X";
 
                 db.SaveChanges();
             }
