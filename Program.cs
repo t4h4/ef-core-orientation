@@ -11,9 +11,20 @@ namespace ef_core_st
 {
     public class CustomerDemo
     {
+        public CustomerDemo()
+        {
+            Orders = new List<OrderDemo>();
+        }
         public int CustomerId { get; set; }
         public string Name { get; set; }
         public int OrderCount { get; set; }
+        public List<OrderDemo> Orders { get; set; }
+    }
+
+    public class OrderDemo
+    {
+        public int OrderId { get; set; }
+        public decimal Total { get; set; }
     }
 
     class Program
@@ -22,21 +33,30 @@ namespace ef_core_st
         {
             using (var db = new NorthwindContext())
             {
-                //Taşıyıcı class kullanarak sipariş sayısı 0'dan büyük müşterileri getirme. + order sayısına göre artan olarak
+                // Müşterinin sipariş sayıyısını ekrana getirme + her siparişin ayrı ayrı toplam fiyatını getirme
                 var customers = db.Customers
-                    .Where(i => !i.Orders.Any())
+                    .Where(i => i.Orders.Any())
                     .Select(i => new CustomerDemo
                     {
                         CustomerId = i.Id,
                         Name = i.FirstName,
-                        OrderCount = i.Orders.Count()
+                        OrderCount = i.Orders.Count(),
+                        Orders = i.Orders.Select(a => new OrderDemo
+                        {
+                            OrderId = a.Id,
+                            Total = (decimal)a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice)
+                        }).ToList()
                     })
                     .OrderBy(i => i.OrderCount)
                     .ToList();
 
-                foreach (var item in customers)
+                foreach (var customer in customers)
                 {
-                    Console.WriteLine($"id: {item.CustomerId} name: {item.Name} count: {item.OrderCount}");
+                    Console.WriteLine($"id: {customer.CustomerId} name: {customer.Name} count: {customer.OrderCount}");
+                    foreach (var order in customer.Orders)
+                    {
+                        Console.WriteLine($"order id: {order.OrderId} total: {order.Total}");
+                    }
                 }
             }
         }
