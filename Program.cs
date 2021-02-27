@@ -24,7 +24,6 @@ namespace ef_core_st
                 //     Console.WriteLine(item.FirstName + " " + item.LastName);
                 // }
                 ////////////////////////////
-
                 // Tüm müşteri kayıtlarının sadece first_name ve last_name bilgilerini getiriniz.
 
                 // var customers = db.Customers.Select(c=>new {
@@ -37,7 +36,6 @@ namespace ef_core_st
                 //     Console.WriteLine(item.FirstName +" "+ item.LastName);
                 // }
                 ////////////////////////////////
-
                 // New York' da yaşayan müşterileri isim sırasına göre getiriniz.
 
                 // var customers = db.Customers
@@ -50,7 +48,6 @@ namespace ef_core_st
                 //     Console.WriteLine(item.FirstName +" "+ item.LastName);
                 // }
                 ///////////////////////////////////
-
                 // "Beverages" kategorisine ait ürünlerin isimlerini getiriniz.
 
                 // var productnames = db.Products
@@ -63,7 +60,6 @@ namespace ef_core_st
                 //     Console.WriteLine(name);
                 // }
                 ///////////////////////////////////////
-
                 // En son eklenen 5 ürün bilgisini alınız.
 
                 // var products = db.Products.OrderByDescending(i=>i.Id).Take(5);
@@ -73,7 +69,6 @@ namespace ef_core_st
                 //     Console.WriteLine(p.ProductName);
                 // }
                 //////////////////////////////////////////
-
                 // Fiyatı 10 ile 30 arasında olan ürünlerin isim, fiyat bilgilerini azalan şekilde getiriniz.
 
                 // var products = db.Products
@@ -89,15 +84,19 @@ namespace ef_core_st
                 //     Console.WriteLine(item.ProductName + " - " +item.ListPrice );
                 // }
                 ///////////////////////////////////////////
-
                 // "Beverages" kategorisindeki ürünlerin ortalama fiyatı nedir?
 
-                var ortalama = db.Products
-                    .Where(i=>i.Category=="Beverages")
-                    .Average(i=>i.ListPrice);
+                // var ortalama = db.Products
+                //     .Where(i=>i.Category=="Beverages")
+                //     .Average(i=>i.ListPrice);
 
-                Console.WriteLine("ortalama: {0}", ortalama);
+                // Console.WriteLine("ortalama: {0}", ortalama);
                 /////////////////////////////////////////
+                // "Beverages" kategorisinde kaç ürün vardır?
+
+                var adet = db.Products.Count(i=>i.Category=="Beverages");
+                Console.WriteLine("adet: {0}", adet);
+                ///////////////////////////////////////////
 
             }
         }
