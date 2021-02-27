@@ -40,16 +40,29 @@ namespace ef_core_st
 
                 // New York' da yaşayan müşterileri isim sırasına göre getiriniz.
 
-                var customers = db.Customers
-                                .Where(i=>i.City == "New York")
-                                .Select(s=> new {s.FirstName,s.LastName})
+                // var customers = db.Customers
+                //                 .Where(i=>i.City == "New York")
+                //                 .Select(s=> new {s.FirstName,s.LastName})
+                //                 .ToList();
+
+                // foreach (var item in customers)
+                // {
+                //     Console.WriteLine(item.FirstName +" "+ item.LastName);
+                // }
+                ///////////////////////////////////
+
+                // "Beverages" kategorisine ait ürünlerin isimlerini getiriniz.
+
+                var productnames = db.Products
+                                .Where(i=>i.Category=="Beverages")
+                                .Select(i=>i.ProductName)
                                 .ToList();
 
-                foreach (var item in customers)
+                foreach (var name in productnames)
                 {
-                    Console.WriteLine(item.FirstName +" "+ item.LastName);
+                    Console.WriteLine(name);
                 }
-                ///////////////////////////////////
+                ///////////////////////////////////////
 
             }
         }
