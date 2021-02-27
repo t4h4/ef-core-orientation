@@ -53,16 +53,26 @@ namespace ef_core_st
 
                 // "Beverages" kategorisine ait ürünlerin isimlerini getiriniz.
 
-                var productnames = db.Products
-                                .Where(i=>i.Category=="Beverages")
-                                .Select(i=>i.ProductName)
-                                .ToList();
+                // var productnames = db.Products
+                //                 .Where(i=>i.Category=="Beverages")
+                //                 .Select(i=>i.ProductName)
+                //                 .ToList();
 
-                foreach (var name in productnames)
-                {
-                    Console.WriteLine(name);
-                }
+                // foreach (var name in productnames)
+                // {
+                //     Console.WriteLine(name);
+                // }
                 ///////////////////////////////////////
+
+                // En son eklenen 5 ürün bilgisini alınız.
+
+                var products = db.Products.OrderByDescending(i=>i.Id).Take(5);
+
+                foreach (var p in products)
+                {
+                    Console.WriteLine(p.ProductName);
+                }
+                //////////////////////////////////////////
 
             }
         }
