@@ -16,8 +16,9 @@ namespace ef_core_st
             using (var db = new NorthwindContext())
             {
                 // miami'de yaşan customer bilgileri gelir.
+                var city = "Miami";
                 var customers = db.Customers
-                    .FromSqlRaw("select * from customers where city='Miami'").ToList();
+                    .FromSqlRaw("select * from customers where city={0}", city).ToList();
 
                 foreach (var item in customers)
                 {
