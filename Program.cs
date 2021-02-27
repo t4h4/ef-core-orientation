@@ -107,15 +107,36 @@ namespace ef_core_st
                 //////////////////////////////////////////
                 // 'Tea' kelimesini içeren ürünleri getiriniz.
 
-                var products = db.Products
-                                .Where(i=>i.ProductName.ToLower().Contains("Tea".ToLower()) || i.Description.Contains("Tea"))
-                                .ToList();
+                // var products = db.Products
+                //                 .Where(i=>i.ProductName.ToLower().Contains("Tea".ToLower()) || i.Description.Contains("Tea"))
+                //                 .ToList();
 
-                foreach (var item in products)
-                {
-                    Console.WriteLine(item.ProductName);
-                }
+                // foreach (var item in products)
+                // {
+                //     Console.WriteLine(item.ProductName);
+                // }
                 ///////////////////////////////////////////
+                // En pahalı ürün ve en ucuz ürün hangisidir?
+
+                var minPrice = db.Products.Min(i=>i.ListPrice);
+                var maxPrice = db.Products.Max(i=>i.ListPrice);
+
+                Console.WriteLine("min: {0} max: {1}", minPrice,maxPrice);
+
+
+                var minproduct = db.Products
+                .Where(i=> i.ListPrice == (db.Products.Min(a=>a.ListPrice)))
+                .FirstOrDefault();
+                
+                Console.WriteLine($"name: {minproduct.ProductName} price: {minproduct.ListPrice}");
+
+                
+                var maxproduct = db.Products
+                .Where(i=> i.ListPrice == (db.Products.Max(a=>a.ListPrice)))
+                .FirstOrDefault();
+                
+                Console.WriteLine($"name: {maxproduct.ProductName} price: {maxproduct.ListPrice}");
+                ////////////////////////////////////////////////7
 
             }
         }
