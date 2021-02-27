@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using ef_core_st.Data.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -219,7 +220,15 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            DataSeeding.Seed(new ShopContext());
+            using(var db = new NorthwindContext())
+            {
+                var products = db.Products.ToList();
+
+                foreach (var item in products)
+                {
+                    Console.WriteLine(item.ProductName);
+                }
+            }
         }
 
         static void InsertUsers()
