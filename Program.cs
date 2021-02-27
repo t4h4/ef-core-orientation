@@ -76,19 +76,28 @@ namespace ef_core_st
 
                 // Fiyatı 10 ile 30 arasında olan ürünlerin isim, fiyat bilgilerini azalan şekilde getiriniz.
 
-                var products = db.Products
-                                .Where(i=> i.ListPrice>=10 && i.ListPrice<=30)
-                                .Select(i=> new {
-                                     i.ProductName,
-                                     i.ListPrice  
-                                }).ToList();
+                // var products = db.Products
+                //                 .Where(i=> i.ListPrice>=10 && i.ListPrice<=30)
+                //                 .Select(i=> new {
+                //                      i.ProductName,
+                //                      i.ListPrice  
+                //                 }).ToList();
 
 
-                foreach (var item in products)
-                {
-                    Console.WriteLine(item.ProductName + " - " +item.ListPrice );
-                }
+                // foreach (var item in products)
+                // {
+                //     Console.WriteLine(item.ProductName + " - " +item.ListPrice );
+                // }
                 ///////////////////////////////////////////
+
+                // "Beverages" kategorisindeki ürünlerin ortalama fiyatı nedir?
+
+                var ortalama = db.Products
+                    .Where(i=>i.Category=="Beverages")
+                    .Average(i=>i.ListPrice);
+
+                Console.WriteLine("ortalama: {0}", ortalama);
+                /////////////////////////////////////////
 
             }
         }
