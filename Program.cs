@@ -25,6 +25,13 @@ namespace ef_core_st
     {
         public int OrderId { get; set; }
         public decimal Total { get; set; }
+        public List<ProductDemo> Products { get; set; }
+    }
+
+    public class ProductDemo
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
     }
 
     class Program
@@ -33,7 +40,7 @@ namespace ef_core_st
         {
             using (var db = new NorthwindContext())
             {
-                // id'si 3 olan müşterinin sipariş sayıyısını ekrana getirme + her siparişin ayrı ayrı toplam fiyatını getirme
+                // id'si 3 olan müşterinin sipariş sayıyısını ekrana getirme + her siparişin ayrı ayrı toplam fiyatını getirme + her siparişin ürün detaylarını getirme.
                 var customers = db.Customers
                     .Where(i => i.Id == 3)
                     .Select(i => new CustomerDemo
@@ -44,7 +51,12 @@ namespace ef_core_st
                         Orders = i.Orders.Select(a => new OrderDemo
                         {
                             OrderId = a.Id,
-                            Total = (decimal)a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice)
+                            Total = (decimal)a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice),
+                            Products = a.OrderDetails.Select(p => new ProductDemo
+                            {
+                                ProductId = (int)p.ProductId,
+                                Name = p.Product.ProductName
+                            }).ToList()
                         }).ToList()
                     })
                     .OrderBy(i => i.OrderCount)
@@ -56,6 +68,10 @@ namespace ef_core_st
                     foreach (var order in customer.Orders)
                     {
                         Console.WriteLine($"order id: {order.OrderId} total: {order.Total}");
+                        foreach (var product in order.Products)
+                        {
+                            Console.WriteLine($"product id: {product.ProductId} name: {product.Name}");
+                        }
                     }
                 }
             }
