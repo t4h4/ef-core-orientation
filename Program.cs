@@ -22,7 +22,7 @@ namespace ef_core_st
         {
             using (var db = new NorthwindContext())
             {
-                //Taşıyıcı class kullanarak sipariş sayısı 0'dan büyük müşterileri getirme.
+                //Taşıyıcı class kullanarak sipariş sayısı 0'dan büyük müşterileri getirme. + order sayısına göre artan olarak
                 var customers = db.Customers
                     .Where(i => i.Orders.Count() > 0)
                     .Select(i => new CustomerDemo
@@ -31,6 +31,7 @@ namespace ef_core_st
                         Name = i.FirstName,
                         OrderCount = i.Orders.Count()
                     })
+                    .OrderBy(i => i.OrderCount)
                     .ToList();
 
                 foreach (var item in customers)
