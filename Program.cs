@@ -24,18 +24,33 @@ namespace ef_core_st
                 //     Console.WriteLine(item.FirstName + " " + item.LastName);
                 // }
                 ////////////////////////////
+
                 // Tüm müşteri kayıtlarının sadece first_name ve last_name bilgilerini getiriniz.
 
-                var customers = db.Customers.Select(c=>new {
-                      c.FirstName,
-                      c.LastName  
-                });
+                // var customers = db.Customers.Select(c=>new {
+                //       c.FirstName,
+                //       c.LastName  
+                // });
+
+                // foreach (var item in customers)
+                // {
+                //     Console.WriteLine(item.FirstName +" "+ item.LastName);
+                // }
+                ////////////////////////////////
+
+                // New York' da yaşayan müşterileri isim sırasına göre getiriniz.
+
+                var customers = db.Customers
+                                .Where(i=>i.City == "New York")
+                                .Select(s=> new {s.FirstName,s.LastName})
+                                .ToList();
 
                 foreach (var item in customers)
                 {
                     Console.WriteLine(item.FirstName +" "+ item.LastName);
                 }
-                ////////////////////////////////
+                ///////////////////////////////////
+
             }
         }
     }
