@@ -99,12 +99,23 @@ namespace ef_core_st
                 ///////////////////////////////////////////
                 // "Beverages" veya "Condiments" kategorilerindeki ürünlerin toplam fiyatı nedir?
 
-                var toplam = db.Products
-                .Where(i=>i.Category == "Beverages" || i.Category=="Condiments")
-                .Sum(i=>i.ListPrice);
+                // var toplam = db.Products
+                // .Where(i=>i.Category == "Beverages" || i.Category=="Condiments")
+                // .Sum(i=>i.ListPrice);
 
-                Console.WriteLine("toplam: {0}", toplam);
+                // Console.WriteLine("toplam: {0}", toplam);
                 //////////////////////////////////////////
+                // 'Tea' kelimesini içeren ürünleri getiriniz.
+
+                var products = db.Products
+                                .Where(i=>i.ProductName.ToLower().Contains("Tea".ToLower()) || i.Description.Contains("Tea"))
+                                .ToList();
+
+                foreach (var item in products)
+                {
+                    Console.WriteLine(item.ProductName);
+                }
+                ///////////////////////////////////////////
 
             }
         }
