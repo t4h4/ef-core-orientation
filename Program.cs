@@ -24,7 +24,7 @@ namespace ef_core_st
             {
                 //Taşıyıcı class kullanarak sipariş sayısı 0'dan büyük müşterileri getirme. + order sayısına göre artan olarak
                 var customers = db.Customers
-                    .Where(i => i.Orders.Any())
+                    .Where(i => !i.Orders.Any())
                     .Select(i => new CustomerDemo
                     {
                         CustomerId = i.Id,
