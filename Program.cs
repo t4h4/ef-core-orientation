@@ -33,9 +33,9 @@ namespace ef_core_st
         {
             using (var db = new NorthwindContext())
             {
-                // Müşterinin sipariş sayıyısını ekrana getirme + her siparişin ayrı ayrı toplam fiyatını getirme
+                // id'si 3 olan müşterinin sipariş sayıyısını ekrana getirme + her siparişin ayrı ayrı toplam fiyatını getirme
                 var customers = db.Customers
-                    .Where(i => i.Orders.Any())
+                    .Where(i => i.Id == 3)
                     .Select(i => new CustomerDemo
                     {
                         CustomerId = i.Id,
