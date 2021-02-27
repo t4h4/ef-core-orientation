@@ -66,13 +66,29 @@ namespace ef_core_st
 
                 // En son eklenen 5 ürün bilgisini alınız.
 
-                var products = db.Products.OrderByDescending(i=>i.Id).Take(5);
+                // var products = db.Products.OrderByDescending(i=>i.Id).Take(5);
 
-                foreach (var p in products)
-                {
-                    Console.WriteLine(p.ProductName);
-                }
+                // foreach (var p in products)
+                // {
+                //     Console.WriteLine(p.ProductName);
+                // }
                 //////////////////////////////////////////
+
+                // Fiyatı 10 ile 30 arasında olan ürünlerin isim, fiyat bilgilerini azalan şekilde getiriniz.
+
+                var products = db.Products
+                                .Where(i=> i.ListPrice>=10 && i.ListPrice<=30)
+                                .Select(i=> new {
+                                     i.ProductName,
+                                     i.ListPrice  
+                                }).ToList();
+
+
+                foreach (var item in products)
+                {
+                    Console.WriteLine(item.ProductName + " - " +item.ListPrice );
+                }
+                ///////////////////////////////////////////
 
             }
         }
