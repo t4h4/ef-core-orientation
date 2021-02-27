@@ -94,9 +94,17 @@ namespace ef_core_st
                 /////////////////////////////////////////
                 // "Beverages" kategorisinde kaç ürün vardır?
 
-                var adet = db.Products.Count(i=>i.Category=="Beverages");
-                Console.WriteLine("adet: {0}", adet);
+                // var adet = db.Products.Count(i=>i.Category=="Beverages");
+                // Console.WriteLine("adet: {0}", adet);
                 ///////////////////////////////////////////
+                // "Beverages" veya "Condiments" kategorilerindeki ürünlerin toplam fiyatı nedir?
+
+                var toplam = db.Products
+                .Where(i=>i.Category == "Beverages" || i.Category=="Condiments")
+                .Sum(i=>i.ListPrice);
+
+                Console.WriteLine("toplam: {0}", toplam);
+                //////////////////////////////////////////
 
             }
         }
