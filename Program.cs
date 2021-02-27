@@ -13,9 +13,16 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            using(var db = new NorthwindContext())
+            using (var db = new NorthwindContext())
             {
-                    
+                // Tüm müşteri kayıtlarını getiriniz.
+
+                var customers = db.Customers.ToList();
+
+                foreach (var item in customers)
+                {
+                    Console.WriteLine(item.FirstName + " " + item.LastName);
+                }
             }
         }
     }
