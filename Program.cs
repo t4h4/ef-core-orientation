@@ -13,16 +13,30 @@ namespace ef_core_st
     {
         static void Main(string[] args)
         {
-            using (var db = new NorthwindContext())
+            // using (var db = new NorthwindContext())
+            // {
+            //  //miami'de yaşan customer bilgileri gelir.
+            //     var city = "Miami";
+            //     var customers = db.Customers
+            //         .FromSqlRaw("select * from customers where city={0}", city).ToList();
+
+            //     foreach (var item in customers)
+            //     {
+            //         Console.WriteLine(item.FirstName);
+            //     }
+            // }
+            ///////////////////////////////////////////////
+             
+            // bu sayede HasColumnName gibi bilgileri context sınıfından ezdik. 
+            using(var db = new CustomNorthwindContext())
             {
-                // miami'de yaşan customer bilgileri gelir.
-                var city = "Miami";
-                var customers = db.Customers
-                    .FromSqlRaw("select * from customers where city={0}", city).ToList();
+                // Müşterilerin sipariş sayıları veriliyor.
+                var customers = db.CustomerOrders
+                .FromSqlRaw("select c.id,c.first_name,count(*) as count from customers c inner join orders o on c.id=o.customer_id group by c.id").ToList();
 
                 foreach (var item in customers)
                 {
-                    Console.WriteLine(item.FirstName);
+                    Console.WriteLine("customer id: {0} firstname: {1} order count: {2}",item.CustomerId,item.FirstName,item.OrderCount);
                 }
             }
         }
