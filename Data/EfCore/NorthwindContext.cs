@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 
 #nullable disable
 
@@ -38,12 +39,16 @@ namespace ef_core_st.Data.EfCore
         public virtual DbSet<String> Strings { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
 
+        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySql("server=localhost;port=3306;database=northwind;user=root", x => x.ServerVersion("10.4.17-mariadb"));
+                optionsBuilder
+                .UseLoggerFactory(MyLoggerFactory)
+                .UseMySql("server=localhost;port=3306;database=northwind;user=root", x => x.ServerVersion("10.4.17-mariadb"));
             }
         }
 
